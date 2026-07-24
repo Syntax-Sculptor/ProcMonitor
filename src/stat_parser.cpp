@@ -30,7 +30,7 @@ std::optional<CPUTimes> StatParser::parse_file(const std::string& file_path) {
     return StatParser::parse_lines(lines);
 }
 
-std::optional<CPUTimes> StatParser::parse_lines([[maybe_unused]] std::vector<std::string> lines) {
+std::optional<CPUTimes> StatParser::parse_lines([[maybe_unused]] const std::vector<std::string>& lines) {
     CPUTimes times {
         .user_time = 0,
         .nice_time = 0,
@@ -43,8 +43,6 @@ std::optional<CPUTimes> StatParser::parse_lines([[maybe_unused]] std::vector<std
         .guest_time = 0,
         .guest_nice_time = 0,
     };
-
-
 
     return times;
 }

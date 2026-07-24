@@ -21,7 +21,7 @@ struct CPUTimes {
 };
 
 namespace StatParser {
-    std::optional<CPUTimes> parse_lines(std::vector<std::string> lines);
+    std::optional<CPUTimes> parse_lines(const std::vector<std::string>& lines);
     std::optional<CPUTimes> parse_file(const std::string& file_path);
 };
 
