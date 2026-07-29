@@ -217,8 +217,6 @@ std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& 
                 break;
             }
             default: {
-                // This shouldn't happen.
-                std::cout << "Unknown CPUTimesParserState in parse_lines." << std::endl;
                 return std::nullopt;
             }
         }
