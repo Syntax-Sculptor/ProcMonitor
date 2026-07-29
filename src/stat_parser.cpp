@@ -9,6 +9,10 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <system_error>
+#include <charconv>
+#include <cstdint>
 
 #include "stat_parser.h"
 
@@ -30,7 +34,28 @@ std::optional<CPUTimes> StatParser::parse_file(const std::string& file_path) {
     return StatParser::parse_lines(lines);
 }
 
-std::optional<CPUTimes> StatParser::parse_lines([[maybe_unused]] const std::vector<std::string>& lines) {
+std::optional<uint64_t> StatParser::column_to_uint64_t(const std::string& str) {
+    if (str.empty() || str.at(0) == '-') {
+        return std::nullopt;
+    }
+
+    uint64_t value;
+
+    auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), value);
+
+    if (err == std::errc{} && ptr == str.data() + str.size()) {
+        return value;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& lines) {
+    if (lines.size() == 0) {
+        return std::nullopt;
+    }
+
     CPUTimes times {
         .user_time = 0,
         .nice_time = 0,
@@ -43,6 +68,161 @@ std::optional<CPUTimes> StatParser::parse_lines([[maybe_unused]] const std::vect
         .guest_time = 0,
         .guest_nice_time = 0,
     };
+
+    using StatParser::CPUTimesParserState;
+
+    CPUTimesParserState state = CPUTimesParserState::PARSE_CPU;
+
+    std::istringstream i_stream(lines[0]);
+    std::string column;
+
+    while (i_stream >> column) {
+        switch (state) {
+            case CPUTimesParserState::PARSE_CPU: {
+                if (column != "cpu") {
+                    return std::nullopt;
+                }
+
+                state = CPUTimesParserState::PARSE_USER_TIME;
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_USER_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.user_time = res.value();
+                    state = CPUTimesParserState::PARSE_NICE_TIME;
+                }
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_NICE_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.nice_time = res.value();
+                    state = CPUTimesParserState::PARSE_SYSTEM_TIME;
+                }
+                
+                break;
+            }
+            case CPUTimesParserState::PARSE_SYSTEM_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.system_time = res.value();
+                    state = CPUTimesParserState::PARSE_IDLE_TIME;
+                } 
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_IDLE_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.idle_time = res.value();
+                    state = CPUTimesParserState::PARSE_IO_WAIT;
+                }
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_IO_WAIT: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.io_wait = res.value();
+                    state = CPUTimesParserState::PARSE_IRQ;
+                }
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_IRQ: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.irq = res.value();
+                    state = CPUTimesParserState::PARSE_SOFT_IRQ;
+                } 
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_SOFT_IRQ: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.soft_irq = res.value();
+                    state = CPUTimesParserState::PARSE_STEAL_TIME;
+                }
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_STEAL_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.steal_time = res.value();
+                    state = CPUTimesParserState::PARSE_GUEST_TIME;
+                }
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_GUEST_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.guest_time = res.value();
+                    state = CPUTimesParserState::PARSE_GUEST_NICE_TIME;
+                } 
+
+                break;
+            }
+            case CPUTimesParserState::PARSE_GUEST_NICE_TIME: {
+                std::optional<uint64_t> res = column_to_uint64_t(column);
+
+                if (!res) {
+                    return std::nullopt;
+                }
+                else {
+                    times.guest_nice_time = res.value();
+                }
+
+                break;
+            }
+            default: {
+                // This shouldn't happen.
+                std::cout << "Unknown CPUTimesParserState in parse_lines." << std::endl;
+                return std::nullopt;
+            }
+        }
+    }
 
     return times;
 }
