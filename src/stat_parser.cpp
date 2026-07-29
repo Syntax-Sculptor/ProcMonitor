@@ -212,6 +212,7 @@ std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& 
                 }
                 else {
                     times.guest_nice_time = res.value();
+                    return times;
                 }
 
                 break;
@@ -230,5 +231,4 @@ std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& 
     else {
         return times;
     }
-
 }
