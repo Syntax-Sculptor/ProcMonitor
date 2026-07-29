@@ -51,6 +51,18 @@ std::optional<uint64_t> StatParser::column_to_uint64_t(const std::string& str) {
     }
 }
 
+static bool parse_column(const std::string& column, uint64_t& val) {
+    std::optional<uint64_t> res = StatParser::column_to_uint64_t(column);
+
+    if (!res) {
+        return false;
+    }
+    else {
+        val = res.value();
+        return true;
+    }
+}
+
 std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& lines) {
     if (lines.size() == 0) {
         return std::nullopt;
@@ -88,131 +100,112 @@ std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& 
                 break;
             }
             case CPUTimesParserState::PARSE_USER_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.user_time);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.user_time = res.value();
-                    state = CPUTimesParserState::PARSE_NICE_TIME;
-                }
+
+                state = CPUTimesParserState::PARSE_NICE_TIME;
 
                 break;
             }
             case CPUTimesParserState::PARSE_NICE_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.nice_time);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.nice_time = res.value();
-                    state = CPUTimesParserState::PARSE_SYSTEM_TIME;
-                }
+
+                state = CPUTimesParserState::PARSE_SYSTEM_TIME;
                 
                 break;
             }
             case CPUTimesParserState::PARSE_SYSTEM_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.system_time);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.system_time = res.value();
-                    state = CPUTimesParserState::PARSE_IDLE_TIME;
-                } 
+
+                state = CPUTimesParserState::PARSE_IDLE_TIME;
 
                 break;
             }
             case CPUTimesParserState::PARSE_IDLE_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.idle_time);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.idle_time = res.value();
-                    state = CPUTimesParserState::PARSE_IO_WAIT;
-                }
+
+                state = CPUTimesParserState::PARSE_IO_WAIT;
 
                 break;
             }
             case CPUTimesParserState::PARSE_IO_WAIT: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.io_wait);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.io_wait = res.value();
-                    state = CPUTimesParserState::PARSE_IRQ;
-                }
+
+                state = CPUTimesParserState::PARSE_IRQ;
 
                 break;
             }
             case CPUTimesParserState::PARSE_IRQ: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.irq);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.irq = res.value();
-                    state = CPUTimesParserState::PARSE_SOFT_IRQ;
-                } 
+
+                state = CPUTimesParserState::PARSE_SOFT_IRQ;
 
                 break;
             }
             case CPUTimesParserState::PARSE_SOFT_IRQ: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.soft_irq);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.soft_irq = res.value();
-                    state = CPUTimesParserState::PARSE_STEAL_TIME;
-                }
+
+                state = CPUTimesParserState::PARSE_STEAL_TIME;
 
                 break;
             }
             case CPUTimesParserState::PARSE_STEAL_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.steal_time);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.steal_time = res.value();
-                    state = CPUTimesParserState::PARSE_GUEST_TIME;
-                }
+
+                state = CPUTimesParserState::PARSE_GUEST_TIME;
 
                 break;
             }
             case CPUTimesParserState::PARSE_GUEST_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.guest_time);
 
                 if (!res) {
                     return std::nullopt;
                 }
-                else {
-                    times.guest_time = res.value();
-                    state = CPUTimesParserState::PARSE_GUEST_NICE_TIME;
-                } 
+
+                state = CPUTimesParserState::PARSE_GUEST_NICE_TIME;
 
                 break;
             }
             case CPUTimesParserState::PARSE_GUEST_NICE_TIME: {
-                std::optional<uint64_t> res = column_to_uint64_t(column);
+                bool res = parse_column(column, times.guest_nice_time);
 
-                if (!res) {
-                    return std::nullopt;
+                if (res) {
+                    return times;
                 }
                 else {
-                    times.guest_nice_time = res.value();
-                    return times;
+                    return std::nullopt;
                 }
 
                 break;
