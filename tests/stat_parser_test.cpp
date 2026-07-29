@@ -24,6 +24,18 @@ TEST(StatParser, rejects_non_numeric_columns) {
     CHECK_FALSE(StatParser::parse_lines({"cpu 869179 0 339263 140893a64 0 22400 0 0 0 0"}));
 }
 
+TEST(StatParser, rejects_empty_line) {
+    CHECK_FALSE(StatParser::parse_lines({""}));
+}
+
+TEST(StatParser, rejects_whitespace_only_line) {
+    CHECK_FALSE(StatParser::parse_lines({"               "}));
+}
+
+TEST(StatParser, rejects_negative_columns) {
+    CHECK_FALSE(StatParser::parse_lines({"cpu -869179 0 339263 -14089364 0 22400 0 0 0 0"}));
+}
+
 TEST(StatParser, accepts_line) {
     std::optional<CPUTimes> times = StatParser::parse_lines({"cpu 869179 0 339263 14089364 0 22400 0 0 0 0"});
     

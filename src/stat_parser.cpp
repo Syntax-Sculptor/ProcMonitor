@@ -222,5 +222,13 @@ std::optional<CPUTimes> StatParser::parse_lines(const std::vector<std::string>& 
         }
     }
 
-    return times;
+    // If the parser is on this state, it means no tokens were consumed
+    // due to it being whitespace only. Reject.
+    if (state == CPUTimesParserState::PARSE_CPU) {
+        return std::nullopt;
+    }
+    else {
+        return times;
+    }
+
 }
