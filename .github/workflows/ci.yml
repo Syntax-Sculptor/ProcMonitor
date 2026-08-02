@@ -1,0 +1,14 @@
+name: GitHub Actions Build
+on: [push, pull_request]
+jobs:
+    Build-Project:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v6
+            - run: echo "Cleaning artifacts"
+            - run: make clean
+            - run: echo "Building library."
+            - run: make
+            - run: echo "Running Unit Tests."
+            - run: make test
