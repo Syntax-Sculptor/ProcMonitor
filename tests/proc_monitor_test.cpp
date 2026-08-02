@@ -138,3 +138,32 @@ TEST(ProcMonitor, compute_utilization_identical) {
     CHECK_TRUE(util.has_value());
     DOUBLES_EQUAL(0.0, util.value(), 0.01);
 }
+
+TEST(ProcMonitor, compute_utilization_rejects_idle_underflow) {
+    CPUTimes prev {
+        .user_time       = 1000,
+        .nice_time       = 0,
+        .system_time     = 500,
+        .idle_time       = 8000,
+        .io_wait         = 0,
+        .irq             = 100,
+        .soft_irq        = 0,
+        .steal_time      = 0,
+        .guest_time      = 0,
+        .guest_nice_time = 0,
+    };
+    CPUTimes curr {
+        .user_time       = 1150,
+        .nice_time       = 0,
+        .system_time     = 550,
+        .idle_time       = 7999, // 1 below prev.idle_time
+        .io_wait         = 0,
+        .irq             = 100,
+        .soft_irq        = 0,
+        .steal_time      = 0,
+        .guest_time      = 0,
+        .guest_nice_time = 0,
+    };
+
+    CHECK_FALSE(ProcMonitor::compute_utilization(prev, curr));
+}

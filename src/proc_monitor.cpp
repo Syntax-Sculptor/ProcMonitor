@@ -45,6 +45,11 @@ std::optional<double> ProcMonitor::compute_utilization(
 
     uint64_t idle_time_prev = ProcMonitor::compute_idle_time(prev);
     uint64_t idle_time_curr = ProcMonitor::compute_idle_time(curr);
+
+    if (idle_time_curr < idle_time_prev) {
+        return std::nullopt;
+    }
+    
     uint64_t idle_delta = idle_time_curr - idle_time_prev;
     
     double utilization = 100.0 * (total_delta - idle_delta) / total_delta;
