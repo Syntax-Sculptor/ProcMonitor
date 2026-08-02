@@ -6,6 +6,8 @@ jobs:
         steps:
             - name: Check out repository code
               uses: actions/checkout@v6
+              with:
+                submodules: recursive
             - run: echo "Cleaning artifacts"
             - run: make clean
             - run: echo "Building library."
