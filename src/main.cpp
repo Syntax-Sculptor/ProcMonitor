@@ -42,12 +42,12 @@ int main() {
     if (sigaction(SIGINT, &sa, nullptr) == -1) {
         std::cerr << "Failed to create SIGINT sigaction" << std::endl;
         return EXIT_FAILURE;
-    };
+    }
     
     if (sigaction(SIGTERM, &sa, nullptr) == -1) {
         std::cerr << "Failed to create SIGTERM sigaction" << std::endl;
         return EXIT_FAILURE;
-    };
+    }
 
     std::cout << "Collecting samples, please wait..." << std::endl;
     
