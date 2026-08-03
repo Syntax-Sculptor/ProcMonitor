@@ -31,6 +31,11 @@ namespace ProcMonitor {
         const CPUTimes& prev, 
         const CPUTimes& curr
     );
+
+    struct Sample {
+        uint64_t timestamp;
+        CPUTimes times;
+    };
 };
 
 #endif
