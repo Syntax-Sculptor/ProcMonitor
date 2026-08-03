@@ -1,3 +1,10 @@
+/*
+ * Syntax-Sculptor
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+
 #include <cstdint>
 
 #include "proc_monitor.h"

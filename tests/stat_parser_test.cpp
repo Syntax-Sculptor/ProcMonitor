@@ -1,3 +1,9 @@
+/*
+ * Syntax-Sculptor
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include <string>
 #include <vector>
 
