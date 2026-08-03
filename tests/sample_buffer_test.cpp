@@ -121,3 +121,7 @@ TEST(SampleBuffer, full_respects_capacity) {
     buff.push(sample);
     CHECK_TRUE(buff.full());
 }
+
+TEST(SampleBuffer, rejects_zero_capacity) {
+    CHECK_THROWS(std::invalid_argument, SampleBuffer{0});
+}
