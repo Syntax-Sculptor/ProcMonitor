@@ -21,9 +21,10 @@
 static const int DELAY_TIME = 5;
 static const std::string FILE_PATH = "/proc/stat";
 static const int BUFFER_CAPACITY = 5;
+static volatile std::sig_atomic_t stop_issued = 0;
 
-static void handle_sig_int(int signal) {
-    exit(signal);
+static void handle_sig_int([[maybe_unused]] int signal) {
+    stop_issued = 1;
 }
 
 uint64_t get_system_time() {
@@ -35,7 +36,6 @@ uint64_t get_system_time() {
 int main() {
     struct sigaction sa{};
     sa.sa_handler = &handle_sig_int;
-    sa.sa_flags = SA_RESTART;
     
     sigemptyset(&sa.sa_mask);
     
@@ -43,12 +43,17 @@ int main() {
         std::cerr << "Failed to create SIGINT sigaction" << std::endl;
         return EXIT_FAILURE;
     };
+    
+    if (sigaction(SIGTERM, &sa, nullptr) == -1) {
+        std::cerr << "Failed to create SIGTERM sigaction" << std::endl;
+        return EXIT_FAILURE;
+    };
 
     std::cout << "Collecting samples, please wait..." << std::endl;
     
     SampleBuffer buff{BUFFER_CAPACITY};
 
-    while (true) {
+    while (!stop_issued) {
         std::optional<CPUTimes> times = StatParser::parse_file(FILE_PATH);
         
         if (!times) {
