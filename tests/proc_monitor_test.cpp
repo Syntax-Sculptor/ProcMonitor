@@ -66,28 +66,28 @@ TEST(ProcMonitor, compute_idle_time_correct) {
 
 TEST(ProcMonitor, compute_utilization_rejects_larger_prev) {
     CPUTimes prev {
-        .user_time       = 1150,
-        .nice_time       = 0,
-        .system_time     = 550,
-        .idle_time       = 8800,
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1150,
+        .nice_time = 0,
+        .system_time = 550,
+        .idle_time = 8800,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
 
     CPUTimes curr {
-        .user_time       = 1000,
-        .nice_time       = 0,
-        .system_time     = 500,
-        .idle_time       = 8000,
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1000,
+        .nice_time = 0,
+        .system_time = 500,
+        .idle_time = 8000,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
     
@@ -96,27 +96,27 @@ TEST(ProcMonitor, compute_utilization_rejects_larger_prev) {
 
 TEST(ProcMonitor, compute_utilization_correct) {
     CPUTimes prev {
-        .user_time       = 1000,
-        .nice_time       = 0,
-        .system_time     = 500,
-        .idle_time       = 8000,
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1000,
+        .nice_time = 0,
+        .system_time = 500,
+        .idle_time = 8000,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
     CPUTimes curr {
-        .user_time       = 1150,
-        .nice_time       = 0,
-        .system_time     = 550,
-        .idle_time       = 8800,
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1150,
+        .nice_time = 0,
+        .system_time = 550,
+        .idle_time = 8800,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
 
@@ -128,15 +128,15 @@ TEST(ProcMonitor, compute_utilization_correct) {
 
 TEST(ProcMonitor, compute_utilization_identical) {
     CPUTimes times {
-        .user_time       = 1000,
-        .nice_time       = 0,
-        .system_time     = 500,
-        .idle_time       = 8000,
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1000,
+        .nice_time = 0,
+        .system_time = 500,
+        .idle_time = 8000,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
 
@@ -148,29 +148,95 @@ TEST(ProcMonitor, compute_utilization_identical) {
 
 TEST(ProcMonitor, compute_utilization_rejects_idle_underflow) {
     CPUTimes prev {
-        .user_time       = 1000,
-        .nice_time       = 0,
-        .system_time     = 500,
-        .idle_time       = 8000,
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1000,
+        .nice_time = 0,
+        .system_time = 500,
+        .idle_time = 8000,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
     CPUTimes curr {
-        .user_time       = 1150,
-        .nice_time       = 0,
-        .system_time     = 550,
-        .idle_time       = 7999, // 1 below prev.idle_time
-        .io_wait         = 0,
-        .irq             = 100,
-        .soft_irq        = 0,
-        .steal_time      = 0,
-        .guest_time      = 0,
+        .user_time = 1150,
+        .nice_time = 0,
+        .system_time = 550,
+        .idle_time = 7999, // 1 below prev.idle_time
+        .io_wait = 0,
+        .irq  = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
         .guest_nice_time = 0,
     };
 
     CHECK_FALSE(ProcMonitor::compute_utilization(prev, curr));
+}
+
+TEST(ProcMonitor, cpu_times_equal) {
+    CPUTimes times_1 = {
+        .user_time = 1000,
+        .nice_time = 0,
+        .system_time = 500,
+        .idle_time = 8000,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
+        .guest_nice_time = 0,
+    };
+    
+    CPUTimes times_2 = {
+        .user_time = 1000,
+        .nice_time = 0,
+        .system_time = 500,
+        .idle_time = 8000,
+        .io_wait = 0,
+        .irq = 100,
+        .soft_irq = 0,
+        .steal_time = 0,
+        .guest_time = 0,
+        .guest_nice_time = 0,
+    };
+
+    CHECK_TRUE(times_1 == times_2);
+}
+
+TEST(ProcMonitor, samples_equal) {
+    ProcMonitor::Sample sample_1 {
+        .timestamp = 100,
+        .times = {
+            .user_time = 1000,
+            .nice_time = 0,
+            .system_time = 500,
+            .idle_time = 8000,
+            .io_wait = 0,
+            .irq = 100,
+            .soft_irq = 0,
+            .steal_time = 0,
+            .guest_time = 0,
+            .guest_nice_time = 0,
+        },
+    };
+
+    ProcMonitor::Sample sample_2 {
+        .timestamp = 100,
+        .times = {
+            .user_time = 1000,
+            .nice_time = 0,
+            .system_time = 500,
+            .idle_time = 8000,
+            .io_wait = 0,
+            .irq = 100,
+            .soft_irq = 0,
+            .steal_time = 0,
+            .guest_time = 0,
+            .guest_nice_time = 0,
+        },
+    };
+
+    CHECK_TRUE(sample_1 == sample_2);
 }

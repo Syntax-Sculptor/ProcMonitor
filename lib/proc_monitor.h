@@ -20,7 +20,8 @@ struct CPUTimes {
     uint64_t soft_irq;
     uint64_t steal_time;
     uint64_t guest_time;
-    uint64_t guest_nice_time;    
+    uint64_t guest_nice_time;
+    bool operator==(const CPUTimes&) const = default;
 };
 
 namespace ProcMonitor {
@@ -35,6 +36,7 @@ namespace ProcMonitor {
     struct Sample {
         uint64_t timestamp;
         CPUTimes times;
+        bool operator==(const Sample&) const = default;
     };
 };
 
