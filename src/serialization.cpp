@@ -78,7 +78,7 @@ std::optional<ProcMonitor::Sample> Serialization::deserialize(
     uint32_t length = read_uint32(frame, 0);
 
     // Make sure frame contains all fields needed.
-    if (length != 88 || frame.size() != 4 + length) {
+    if (length != Serialization::PAYLOAD_SIZE || frame.size() != 4 + length) {
         return std::nullopt;
     }
 
