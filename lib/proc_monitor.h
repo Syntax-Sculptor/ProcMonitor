@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <cstdint>
+#include <iostream>
 
 struct CPUTimes {
     uint64_t user_time;
@@ -37,6 +38,7 @@ namespace ProcMonitor {
         uint64_t timestamp;
         CPUTimes times;
         bool operator==(const Sample&) const = default;
+        friend std::ostream& operator<<(std::ostream &os, const Sample& sample);
     };
 };
 

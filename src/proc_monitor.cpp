@@ -57,4 +57,20 @@ namespace ProcMonitor {
 
         return utilization;
     }
+
+    std::ostream& operator<<(std::ostream &os, const Sample& sample) {
+        os << "SAMPLE Time: " << sample.timestamp << std::endl;
+        os << "User Time: " << sample.times.user_time << std::endl;
+        os << "Nice Time: " << sample.times.nice_time << std::endl;
+        os << "System Time: " << sample.times.system_time << std::endl;
+        os << "Idle Time: " << sample.times.idle_time << std::endl;
+        os << "IO Wait: " << sample.times.io_wait << std::endl;
+        os << "IRQ: " << sample.times.irq << std::endl;
+        os << "Soft IRQ: " << sample.times.soft_irq << std::endl;
+        os << "Steal Time: " << sample.times.steal_time << std::endl;
+        os << "Guest Time: " << sample.times.guest_time << std::endl;
+        os << "Guest Nice Time: " << sample.times.guest_nice_time << std::endl;
+
+        return os;
+    }
 };
