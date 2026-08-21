@@ -12,12 +12,12 @@
 #include "network.h"
 
 namespace Network {
-    TransmitState recv_safe(int socket, uint8_t* buffer, size_t n, int flags) {
+    TransmitState recv_safe(int sock, uint8_t* buffer, size_t n, int flags) {
         size_t total_read = 0;
 
         while (total_read < n) {
             ssize_t bytes_read = recv(
-                socket, 
+                sock, 
                 buffer + total_read, 
                 n - total_read, 
                 flags
@@ -29,7 +29,7 @@ namespace Network {
                 if (errno == EINTR) {
                     return TransmitState::INTERRUPT;
                 }
-                
+
                 return TransmitState::FAIL;
             }
             else if (bytes_read == 0) {

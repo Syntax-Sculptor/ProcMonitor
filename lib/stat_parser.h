@@ -15,7 +15,23 @@
 #include "proc_monitor.h"
 
 namespace StatParser {
+    /** 
+     * Parses `lines` into a `CPUTimes` struct.
+     * 
+     * @param lines The list of lines to parse through. As of now, only
+     * the first line is parsed through.
+     * @return A `CPUTimes` struct upon successful parsing. If the line is malformed
+     * `std::nullopt` is returned.
+    */
     std::optional<CPUTimes> parse_lines(const std::vector<std::string>& lines);
+
+    /**
+     * Opens a file at `file_path` and parses its contents into a `CPUTimes` struct.
+     * 
+     * @param file_path The path to the file to open and parse through.
+     * @return A `CPUTimes` struct upon successful parsing. If the line is malformed
+     * or the file is already open, `std::nullopt` is returned.
+     */
     std::optional<CPUTimes> parse_file(const std::string& file_path);
 
     enum class CPUTimesParserState {
@@ -32,6 +48,11 @@ namespace StatParser {
         PARSE_GUEST_NICE_TIME,
     };
 
+    /** 
+     * Converts `str` into a `uint64_t`.
+     * 
+     * @return `uint64_t` if `str` was parsed, `std::nullopt` otherwise.
+     */
     std::optional<uint64_t> column_to_uint64_t(const std::string& str);
 };
 

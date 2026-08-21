@@ -26,9 +26,28 @@ struct CPUTimes {
 };
 
 namespace ProcMonitor {
+    /**
+     * Returns the total elapsed time by summing together all CPU time counters
+     * except for `guest` and `guest_nice`, as they are already a part of `user` and
+     * `nice`.
+     * 
+     * @return The total elapsed CPU time.
+     */
     uint64_t compute_total_time(const CPUTimes& times);
+    
+    /**
+     * Returns the total CPU time of `idle` and `io_wait` combined.
+     * 
+     * @return The total elapsed idle CPU time.
+     */
     uint64_t compute_idle_time(const CPUTimes& times);
 
+    /**
+     * Computes the system utilization between two points with a range of 0-100.
+     * 
+     * @return The system utilization. If `curr` is less than `prev`, `std::nullopt`
+     *         is returned instead.
+     */
     std::optional<double> compute_utilization(
         const CPUTimes& prev, 
         const CPUTimes& curr
