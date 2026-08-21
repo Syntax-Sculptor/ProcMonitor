@@ -1,3 +1,9 @@
+/*
+ * Syntax-Sculptor
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <chrono>
