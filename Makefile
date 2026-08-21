@@ -11,12 +11,14 @@ CPP_FLAGS := -Wall -Wextra -std=c++20 -Wpedantic -Werror
 INCLUDES := -Ilib/ -Isrc/
 
 LIB_SRC := src/stat_parser.cpp src/proc_monitor.cpp src/sample_buffer.cpp \
-	src/serialization.cpp
-SRC     := src/main.cpp $(LIB_SRC)
-OUT     := build/proc_monitor
+	src/serialization.cpp src/network.cpp
+SRC        := src/main.cpp $(LIB_SRC)
+SERVER_SRC := src/server.cpp $(LIB_SRC)
+OUT        := build/proc_monitor
+SERVER_OUT := build/server
 
 TEST_SRC := tests/test_main.cpp tests/stat_parser_test.cpp tests/proc_monitor_test.cpp \
-	tests/sample_buffer_test.cpp tests/test_serialization.cpp
+	tests/sample_buffer_test.cpp tests/test_serialization.cpp tests/test_network.cpp
 
 TEST_OUT := build/run_tests
 
@@ -29,6 +31,10 @@ all: proc_monitor
 proc_monitor:
 	mkdir -p build
 	$(CPP_COMPILER) $(CPP_FLAGS) $(INCLUDES) $(SRC) -o $(OUT)
+
+server:
+	mkdir -p build
+	$(CPP_COMPILER) $(CPP_FLAGS) $(INCLUDES) $(SERVER_SRC) -o $(SERVER_OUT)
 
 test: $(CPPUTEST_LIB)
 	mkdir -p build

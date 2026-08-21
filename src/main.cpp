@@ -13,14 +13,21 @@
 #include <csignal>
 #include <cstdint>
 #include <chrono>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 #include "stat_parser.h"
 #include "proc_monitor.h"
 #include "sample_buffer.h"
+#include "serialization.h"
+#include "network.h"
 
-static const int DELAY_TIME = 5;
-static const std::string FILE_PATH = "/proc/stat";
-static const int BUFFER_CAPACITY = 5;
+static constexpr int DELAY_TIME = 5;
+static constexpr std::string FILE_PATH = "/proc/stat";
+static constexpr int BUFFER_CAPACITY = 5;
+// TODO: Move me into some config/.env file
+static constexpr uint16_t PORT = 1305;
 static volatile std::sig_atomic_t stop_issued = 0;
 
 static void handle_sig_int([[maybe_unused]] int signal) {
@@ -49,6 +56,29 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    
+    if (sock == -1) {
+        std::cerr << "Can't create socket!" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    sockaddr_in hint = {};
+    hint.sin_family = AF_INET;
+    hint.sin_port = htons(PORT);
+
+    if (inet_pton(AF_INET, "127.0.0.1", &hint.sin_addr) <= 0) {
+        std::cerr << "Failed to call inet_pton" << std::endl;
+        close(sock);
+        return EXIT_FAILURE;
+    }
+
+    if (connect(sock, (struct sockaddr*)&hint, sizeof(hint)) == -1) {
+        std::cerr << "Can't connect to server" << std::endl;
+        close(sock);
+        return EXIT_FAILURE;
+    }
+
     std::cout << "Collecting samples, please wait..." << std::endl;
     
     SampleBuffer buff{BUFFER_CAPACITY};
@@ -68,10 +98,24 @@ int main() {
 
         buff.push(sample);
 
+        std::vector<uint8_t> frame = Serialization::serialize(sample);
+
+        if (Network::send_all(
+            sock, 
+            frame.data(), 
+            frame.size(), 
+            MSG_NOSIGNAL
+        ) == Network::TransmitState::FAIL) {
+            std::cerr << "Failed to send frame to server." << std::endl;
+            return EXIT_FAILURE;
+        }
+
         sleep(DELAY_TIME);
     }
 
     std::cout << "Collected " << buff.size() << " samples" << std::endl;
+
+    close(sock);
 
     return EXIT_SUCCESS;
 }

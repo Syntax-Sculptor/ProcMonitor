@@ -18,7 +18,8 @@ namespace Serialization {
     std::optional<ProcMonitor::Sample> deserialize(
         const std::vector<uint8_t>& frame
     );
-    constexpr int PAYLOAD_SIZE = 88;
+    constexpr size_t PAYLOAD_SIZE = 88;
+    constexpr size_t HEADER_SIZE = 4;
 };
 
 #endif
