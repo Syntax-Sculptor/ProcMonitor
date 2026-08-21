@@ -27,7 +27,7 @@ static void handle_sig_int([[maybe_unused]] int signal) {
     stop_issued = 1;
 }
 
-uint64_t get_system_time() {
+static uint64_t get_system_time() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()
     ).count();
