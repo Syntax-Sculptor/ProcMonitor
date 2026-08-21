@@ -13,13 +13,13 @@
 
 static void append_uint64(uint64_t num, std::vector<uint8_t>& bytes) {
     for (int i = 7; i >= 0; i--) {
-        bytes.push_back((num >> i * 8) & 0xFF);
+        bytes.push_back((num >> (i * 8)) & 0xFF);
     }
 }
 
 static void append_uint32(uint32_t num, std::vector<uint8_t>& bytes) {
     for (int i = 3; i >= 0; i--) {
-        bytes.push_back((num >> i * 8 ) & 0xFF);
+        bytes.push_back((num >> (i * 8)) & 0xFF);
     }
 }
 
